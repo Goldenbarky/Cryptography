@@ -6,6 +6,7 @@
         string ciphertext = Console.ReadLine();
 
         if(response == "shift") Shift_Decryption(ciphertext);
+        else if (response == "affine") Affine_Decrpytion(ciphertext);
     }
 
     public static void Shift_Decryption(string ciphertext) {
@@ -19,5 +20,24 @@
 
             Console.WriteLine($"Attempt {i}: {plaintext}");
         }
+    }
+
+    public static void Affine_Decrpytion(string ciphertext) {
+        Console.Write("What is b? ");
+        int b = int.Parse(Console.ReadLine());
+        Console.Write("What is a inverse? ");
+        int a = int.Parse(Console.ReadLine());
+
+        string plaintext = "";
+
+        ciphertext.ToList().ForEach(x=>{
+            plaintext += (char) (Modulo((a * ((x-97)-b)), 26) + 97);
+        });
+
+        Console.WriteLine(plaintext);
+    }
+
+    public static int Modulo(int a, int b) {
+        return (a - b * (int)Math.Floor((decimal)a / b));
     }
 }
