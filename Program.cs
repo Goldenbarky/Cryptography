@@ -38,6 +38,6 @@
     }
 
     public static int Modulo(int a, int b) {
-        return (a - b * (int)Math.Floor((decimal)a / b));
+        return ((a % b) + b) % b;
     }
 }
