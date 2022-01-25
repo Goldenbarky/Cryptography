@@ -40,14 +40,19 @@ class Program {
         for(int i = 0; i < Math.Pow(2, initial_keystream.Length); i++) {
             int prev = 0;
             for(int j = 0; j < paths.Length; j++) {
-                prev = (paths[j] & registers.ToList()[i]) ^ prev;
+                prev = (paths[j] & registers.ToList()[j]) ^ prev;
             }
             keystream.Add(registers.Dequeue());
             registers.Enqueue(prev);
 
-            registers.ToList().ForEach(x=>Console.Write(x));
+            List<int> register_list = registers.ToList();
+            register_list.Reverse();
+            register_list.ForEach(x=>Console.Write(x));
             Console.WriteLine();
         }
+
+        keystream.ForEach(x=>Console.Write(x));
+        Console.WriteLine();
     }
 
     //Turns a string of bits into an array of integers for bitwise operations
@@ -56,12 +61,12 @@ class Program {
 
         for(int i = 0; i < str.Length; i++) {
             if(str[i] != '0' && str[i] != '1') return null;
-            bits[i] = (str[i] == 1) ? 1 : 0;
+            bits[i] = (str[i] == '1') ? 1 : 0;
         }
 
         return bits;
     }
-    
+
     public static void Affine_Decrpytion(string ciphertext) {
         Console.Write("What is b? ");
         int b = int.Parse(Console.ReadLine());
