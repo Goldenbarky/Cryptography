@@ -1,6 +1,31 @@
 ﻿using System.Collections;
 class Program {
     public static void Main(string[] args) {
+        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n");
+        string response = Console.ReadLine();
+        
+        string[] nums;
+        switch (response) {
+            case "1":
+                Decryption();
+                break;
+            case "2":
+                Console.Write("Please enter the numbers (ex. 3, 4): ");
+                nums = Console.ReadLine().Split(", ");
+                Console.WriteLine(GCD(int.Parse(nums[0]), int.Parse(nums[1])));
+                break;
+            case "3":
+                Console.Write("Please enter the numbers (ex. 7 % 2): ");
+                nums = Console.ReadLine().Split(" % ");
+                Console.WriteLine(Modulo(int.Parse(nums[0]), int.Parse(nums[1])));
+                break;
+            default:
+                Console.WriteLine("That is not an option");
+                break;
+        }
+    }
+
+    public static void Decryption() {
         Console.Write("What type of cipher would you like to decrypt? ");
         string response = Console.ReadLine();
         Console.Write("Please enter the text to be decrypted: ");
@@ -84,5 +109,12 @@ class Program {
 
     public static int Modulo(int a, int b) {
         return ((a % b) + b) % b;
+    }
+
+    public static int GCD(int a, int b) {
+        if(b == 0)
+            return a;
+        else
+            return GCD(b, Modulo(a, b));
     }
 }
