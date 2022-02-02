@@ -19,6 +19,16 @@ class Program {
                 nums = Console.ReadLine().Split(" % ");
                 Console.WriteLine(Modulo(int.Parse(nums[0]), int.Parse(nums[1])));
                 break;
+            case "4":
+                Console.Write("Enter initial bits (110): ");
+                string initial_keystream = Console.ReadLine();
+                Console.Write("Please enter the P values (010): ");
+                string coefficients = Console.ReadLine();
+                if(initial_keystream.Length != coefficients.Length)
+                    Console.WriteLine("The two inputs must be the same length");
+                else 
+                    Linear_Shift_Register(initial_keystream, coefficients);
+                break;
             default:
                 Console.WriteLine("That is not an option");
                 break;
@@ -32,7 +42,6 @@ class Program {
         string ciphertext = Console.ReadLine();
 
         if(response == "shift") Shift_Decryption(ciphertext);
-        else if(response == "lfsr") Linear_Shift_Register(ciphertext);
         else if (response == "affine") Affine_Decrpytion(ciphertext);
     }
 
@@ -49,21 +58,21 @@ class Program {
         }
     }
 
-    public static void Linear_Shift_Register(string initial_keystream) {
-        Console.Write("Please enter the P values (010): ");
-        string coefficients = Console.ReadLine();
+    public static void Linear_Shift_Register(string initial_keystream, string coefficients) {
         int[] paths = Bit_String(coefficients);
 
-        
         Queue<int> registers = new Queue<int>();
         foreach(int bit in Bit_String(initial_keystream)) {
             registers.Enqueue(bit);
         }
 
         List<int> keystream = new List<int>();
+        HashSet<string> prev_registers = new HashSet<string>();
 
-        for(int i = 0; i < Math.Pow(2, initial_keystream.Length); i++) {
+        int i = 0;
+        while(true) {
             int prev = 0;
+            int max_cycle = (int) Math.Pow(2, paths.Length) - 1;
             for(int j = 0; j < paths.Length; j++) {
                 prev = (paths[j] & registers.ToList()[j]) ^ prev;
             }
@@ -72,8 +81,15 @@ class Program {
 
             List<int> register_list = registers.ToList();
             register_list.Reverse();
-            register_list.ForEach(x=>Console.Write(x));
-            Console.WriteLine();
+            string register_string = "";
+            register_list.ForEach(x=>register_string += x);
+            Console.WriteLine(register_string);
+
+            if(!prev_registers.Add(register_string)) {
+                Console.WriteLine($"Sequence repeats after {i} cycles. Max cycle length for this lfsr is {max_cycle}");
+                break;
+            }
+            i++;
         }
 
         keystream.ForEach(x=>Console.Write(x));
