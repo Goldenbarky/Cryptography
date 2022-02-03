@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 class Program {
     public static void Main(string[] args) {
-        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n");
+        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n");
         string response = Console.ReadLine();
         
         string[] nums;
@@ -69,18 +69,16 @@ class Program {
         List<int> keystream = new List<int>();
         HashSet<string> prev_registers = new HashSet<string>();
 
+        
+
         int i = 0;
         while(true) {
             int prev = 0;
             int max_cycle = (int) Math.Pow(2, paths.Length) - 1;
-            for(int j = 0; j < paths.Length; j++) {
-                prev = (paths[j] & registers.ToList()[j]) ^ prev;
-            }
-            keystream.Add(registers.Dequeue());
-            registers.Enqueue(prev);
 
             List<int> register_list = registers.ToList();
             register_list.Reverse();
+            
             string register_string = "";
             register_list.ForEach(x=>register_string += x);
             Console.WriteLine(register_string);
@@ -89,6 +87,13 @@ class Program {
                 Console.WriteLine($"Sequence repeats after {i} cycles. Max cycle length for this lfsr is {max_cycle}");
                 break;
             }
+
+            for(int j = 0; j < paths.Length; j++) {
+                prev = (paths[j] & registers.ToList()[j]) ^ prev;
+            }
+            keystream.Add(registers.Dequeue());
+            registers.Enqueue(prev);
+
             i++;
         }
 
