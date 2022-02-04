@@ -21,8 +21,9 @@
             case "4":
                 Console.Write("Enter initial bits (110): ");
                 string initial_keystream = Console.ReadLine();
-                Console.Write("Please enter the P values (010): ");
-                string coefficients = Console.ReadLine();
+                Console.Write("Enter the polynomial (0,1,3): ");
+                string polynomialString = Console.ReadLine();
+                string coefficients = PolynomialBitString(polynomialString);
                 if(initial_keystream.Length != coefficients.Length)
                     Console.WriteLine("The two inputs must be the same length");
                 else {
@@ -82,6 +83,8 @@
             int max_cycle = (int) Math.Pow(2, paths.Length) - 1;
 
             List<int> register_list = registers.ToList();
+
+            //Reverse the inputs for human readability
             register_list.Reverse();
             
             string register_string = string.Join("", register_list);
@@ -106,15 +109,10 @@
 
     //Calculates the type of polynomial the lfsr represents
     public static void LFSR_Classification(string polynomial) {
+        string polynomialCoefficients = PolynomialBitString(polynomial);
         HashSet<int> tested_values = new HashSet<int>();
         int longestLength = -1;
-        int maxCycleLength = (int)Math.Pow(2, polynomial.Length) - 1;
-
-        string polynomialCoefficients = "";
-        string[] polynomialArray = polynomial.Trim(new[] {'(', ')'}).Split(",");
-        for(int i = polynomial.Count() - 1; i >= 0; i--) {
-            polynomialCoefficients += (polynomial.Contains(i.ToString())) ? "1" : "0";
-        }
+        int maxCycleLength = (int)Math.Pow(2, polynomialCoefficients.Length) - 1;
 
         for(int i = 1; i <= maxCycleLength; i++) {
             if(tested_values.Contains(i)) continue;
@@ -122,7 +120,7 @@
             string initial_keystream = Convert.ToString(i, 2);
 
             //Prepend 0s until keystream is same length as the polynomial
-            while(initial_keystream.Length < polynomial.Length) {
+            while(initial_keystream.Length < polynomialCoefficients.Count()) {
                 initial_keystream = initial_keystream.Insert(0, "0");
             }
 
@@ -142,6 +140,18 @@
         }
 
         Console.WriteLine($"The polynomial {polynomial} is irreducible");
+    }
+
+    public static string PolynomialBitString(string polynomial) {
+        string[] polynomialArray = polynomial.Trim(new[] {'(', ')'}).Split(",");
+        int polynomialDegree = int.Parse(polynomialArray[polynomialArray.Count()-1]);
+        string polynomialCoefficients = "";
+
+        for(int i = 0; i < polynomialDegree; i++) {
+            polynomialCoefficients += (polynomial.Contains(i.ToString())) ? "1" : "0";
+        }
+
+        return polynomialCoefficients;
     }
 
     //Turns a string of bits into an array of integers for bitwise operations
