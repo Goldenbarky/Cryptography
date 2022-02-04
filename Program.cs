@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 class Program {
     public static void Main(string[] args) {
-        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n");
+        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n5) Determine the classification of a LFSR polynomial\n");
         string response = Console.ReadLine();
         
         string[] nums;
@@ -26,8 +26,15 @@ class Program {
                 string coefficients = Console.ReadLine();
                 if(initial_keystream.Length != coefficients.Length)
                     Console.WriteLine("The two inputs must be the same length");
-                else 
-                    Linear_Shift_Register(initial_keystream, coefficients);
+                else {
+                    (string keystream, HashSet<int> values) = Linear_Feedback_Shift_Register(initial_keystream, coefficients, true);
+                    Console.WriteLine($"The keystream is {keystream}");
+                }
+                break;
+            case "5":
+                Console.Write("Enter the polynomial with p0 on the left (0011): ");
+                string polynomial = Console.ReadLine();
+                LFSR_Classification(polynomial);
                 break;
             default:
                 Console.WriteLine("That is not an option");
@@ -58,7 +65,8 @@ class Program {
         }
     }
 
-    public static void Linear_Shift_Register(string initial_keystream, string coefficients) {
+    //Computes the lfsr and returns a tuple of the keystream cycle and the visited values in the cycle
+    public static (string, HashSet<int>) Linear_Feedback_Shift_Register(string initial_keystream, string coefficients, bool printToConsole = false) {
         int[] paths = Bit_String(coefficients);
 
         Queue<int> registers = new Queue<int>();
@@ -67,9 +75,7 @@ class Program {
         }
 
         List<int> keystream = new List<int>();
-        HashSet<string> prev_registers = new HashSet<string>();
-
-        
+        HashSet<int> prev_registers = new HashSet<int>();
 
         int i = 0;
         while(true) {
@@ -79,12 +85,11 @@ class Program {
             List<int> register_list = registers.ToList();
             register_list.Reverse();
             
-            string register_string = "";
-            register_list.ForEach(x=>register_string += x);
-            Console.WriteLine(register_string);
+            string register_string = string.Join("", register_list);
+            if(printToConsole) Console.WriteLine(register_string);
 
-            if(!prev_registers.Add(register_string)) {
-                Console.WriteLine($"Sequence repeats after {i} cycles. Max cycle length for this lfsr is {max_cycle}");
+            if(!prev_registers.Add(Convert.ToInt32(register_string, 2))) {
+                if(printToConsole) Console.WriteLine($"Sequence repeats after {i} cycles. Max cycle length for this lfsr is {max_cycle}");
                 break;
             }
 
@@ -97,8 +102,41 @@ class Program {
             i++;
         }
 
-        keystream.ForEach(x=>Console.Write(x));
-        Console.WriteLine();
+        return (string.Join("", keystream), prev_registers);
+    }
+
+    //Calculates the type of polynomial the lfsr represents
+    public static void LFSR_Classification(string polynomial) {
+        HashSet<int> tested_values = new HashSet<int>();
+        int longestLength = -1;
+        int maxCycleLength = (int)Math.Pow(2, polynomial.Length) - 1;
+
+        for(int i = 1; i <= maxCycleLength; i++) {
+            if(tested_values.Contains(i)) continue;
+
+            string initial_keystream = Convert.ToString(i, 2);
+
+            //Prepend 0s until keystream is same length as the polynomial
+            while(initial_keystream.Length < polynomial.Length) {
+                initial_keystream = initial_keystream.Insert(0, "0");
+            }
+
+            (string keystream, HashSet<int> visited_values) = Linear_Feedback_Shift_Register(initial_keystream, polynomial);
+
+            visited_values.ToList().ForEach(x=>tested_values.Add(x));
+
+            if(longestLength == -1) longestLength = keystream.Length;
+            
+            if(longestLength == maxCycleLength) {
+                Console.WriteLine($"The polynomial {polynomial} is primitive");
+                return;
+            } else if (longestLength != keystream.Length) {
+                Console.WriteLine($"The polynomial {polynomial} is reducible");
+                return;
+            }
+        }
+
+        Console.WriteLine($"The polynomial {polynomial} is irreducible");
     }
 
     //Turns a string of bits into an array of integers for bitwise operations
