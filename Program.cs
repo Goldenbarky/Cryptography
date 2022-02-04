@@ -1,5 +1,4 @@
-﻿using System.Collections;
-class Program {
+﻿class Program {
     public static void Main(string[] args) {
         Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n5) Determine the classification of a LFSR polynomial\n");
         string response = Console.ReadLine();
@@ -32,7 +31,7 @@ class Program {
                 }
                 break;
             case "5":
-                Console.Write("Enter the polynomial with p0 on the left (0011): ");
+                Console.Write("Enter the polynomial (eg. (0,1,2)): ");
                 string polynomial = Console.ReadLine();
                 LFSR_Classification(polynomial);
                 break;
@@ -111,6 +110,12 @@ class Program {
         int longestLength = -1;
         int maxCycleLength = (int)Math.Pow(2, polynomial.Length) - 1;
 
+        string polynomialCoefficients = "";
+        string[] polynomialArray = polynomial.Trim(new[] {'(', ')'}).Split(",");
+        for(int i = polynomial.Count() - 1; i >= 0; i--) {
+            polynomialCoefficients += (polynomial.Contains(i.ToString())) ? "1" : "0";
+        }
+
         for(int i = 1; i <= maxCycleLength; i++) {
             if(tested_values.Contains(i)) continue;
 
@@ -121,7 +126,7 @@ class Program {
                 initial_keystream = initial_keystream.Insert(0, "0");
             }
 
-            (string keystream, HashSet<int> visited_values) = Linear_Feedback_Shift_Register(initial_keystream, polynomial);
+            (string keystream, HashSet<int> visited_values) = Linear_Feedback_Shift_Register(initial_keystream, polynomialCoefficients);
 
             visited_values.ToList().ForEach(x=>tested_values.Add(x));
 
