@@ -1,6 +1,8 @@
-﻿class Program {
+﻿using System.Numerics;
+
+class Program {
     public static void Main(string[] args) {
-        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n5) Determine the classification of a LFSR polynomial\n");
+        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n5) Compute the Extended Euclidian Algorithm\n6) Determine the classification of a LFSR polynomial\n7) Determine the primitive roots for an integer\n");
         string response = Console.ReadLine();
         
         string[] nums;
@@ -32,9 +34,22 @@
                 }
                 break;
             case "5":
+                Console.Write("Enter the numbers (ex. 31, 6): ");
+                nums = Console.ReadLine().Split(", ");
+                Console.WriteLine(ExtendedEuclidianAlgorithm(int.Parse(nums[0]), int.Parse(nums[1])));
+                break;
+            case "6":
                 Console.Write("Enter the polynomial (eg. (0,1,2)): ");
                 string polynomial = Console.ReadLine();
                 LFSR_Classification(polynomial);
+                break;
+            case "7":
+                Console.Write("Enter the number to generate primitive roots for (ex. 7): ");
+                int num = int.Parse(Console.ReadLine());
+                Console.Write("Print orders? (y/n): ");
+                bool print = Console.ReadLine() == "y";
+                PrimitiveRoots(num, print).ForEach(x=>Console.Write($"{x}, "));
+                Console.WriteLine();
                 break;
             default:
                 Console.WriteLine("That is not an option");
@@ -142,6 +157,7 @@
         Console.WriteLine($"The polynomial {polynomial} is irreducible");
     }
 
+    //Returns a bitwise representation of the polynomial
     public static string PolynomialBitString(string polynomial) {
         string[] polynomialArray = polynomial.Trim(new[] {'(', ')'}).Split(",");
         int polynomialDegree = int.Parse(polynomialArray[polynomialArray.Count()-1]);
@@ -190,5 +206,48 @@
             return a;
         else
             return GCD(b, Modulo(a, b));
+    }
+
+    //Returns the multiplicative inverse for b mod a
+    public static int ExtendedEuclidianAlgorithm(int a, int b) {
+        List<int> s = new List<int> {1, 0};
+        List<int> t = new List<int> {0, 1};
+        List<int> r = new List<int> {a, b};
+        List<int> q = new List<int> {0};
+        int i = 1;
+
+        do {
+            i++;
+            r.Add(Modulo(r[i-2], r[i-1])); 
+            q.Add((r[i-2] - r[i]) / r[i-1]);
+            s.Add(s[i-2] - (q[i-1] * s[i-1]));
+            t.Add(t[i-2] - (q[i-1] * t[i-1]));
+        } while (r[i] != 0);
+
+        return Modulo(t[i-1], a);
+    }
+
+    //Returns the primitive roots for an integer
+    //Takes a boolean as input as whether to print out the order of each root
+    public static List<int> PrimitiveRoots(int n, bool printOrders) {
+        List<int> generators = new List<int>();
+        for(int i = 1; i < n; i++) {
+            int order;
+            for(order = 1; order < n; order++) {
+                if(BigInteger.ModPow(i, order, n) == 1)
+                    break;
+            }
+            if(printOrders) {
+                if(order == n)
+                    Console.WriteLine($"{i}: (GCD) {GCD(i, n)}");
+                else
+                    Console.WriteLine($"{i}: order {order}");
+            }
+                
+            if(order == n - 1)
+                generators.Add(i);
+        }
+
+        return generators;
     }
 }
