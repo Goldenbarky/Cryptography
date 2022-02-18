@@ -30,7 +30,7 @@ class Program {
                     Console.WriteLine("The two inputs must be the same length");
                 else {
                     (string keystream, HashSet<int> values) = Linear_Feedback_Shift_Register(initial_keystream, coefficients, true);
-                    Console.WriteLine($"The keystream is {keystream}");
+                    //Console.WriteLine($"The keystream is {keystream}");
                 }
                 break;
             case "5":
@@ -164,7 +164,7 @@ class Program {
         string polynomialCoefficients = "";
 
         for(int i = 0; i < polynomialDegree; i++) {
-            polynomialCoefficients += (polynomial.Contains(i.ToString())) ? "1" : "0";
+            polynomialCoefficients += (polynomialArray.Contains(i.ToString())) ? "1" : "0";
         }
 
         return polynomialCoefficients;
