@@ -271,7 +271,7 @@ class Program {
             finalNum = finalNum ^ ((i & num1) * num2);
         }
 
-        while(finalNum > 127) {
+        while(finalNum > 256) {
             int bitStringLength = Convert.ToString(finalNum, 2).Length-1;
             int AESIrreducible = Convert.ToInt32("100011011", 2) << bitStringLength-8;
             finalNum = finalNum ^ AESIrreducible;
