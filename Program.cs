@@ -52,9 +52,14 @@ class Program {
                 Console.WriteLine();
                 break;
             case "8":
-                Console.Write("Enter the polynomials in hex (ex. 72 * 2F ): ");
-                nums = Console.ReadLine().Split(" * ");
-                Console.WriteLine(PolynomialMultiplication(nums[0], nums[1]));
+                string input = "";
+                while (true) {
+                    Console.Write("Enter the polynomials in hex (ex. 72 * 2F ): ");
+                    input = Console.ReadLine();
+                    if(input == "q") break;
+                    nums = input.Split(" * ");
+                    Console.WriteLine(PolynomialMultiplication(nums[0], nums[1]));
+                }
                 break;
             default:
                 Console.WriteLine("That is not an option");
