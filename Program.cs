@@ -2,7 +2,7 @@
 
 class Program {
     public static void Main(string[] args) {
-        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n5) Compute the Extended Euclidian Algorithm\n6) Determine the classification of a LFSR polynomial\n7) Determine the primitive roots for an integer\n");
+        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n5) Compute the Extended Euclidian Algorithm\n6) Determine the classification of a LFSR polynomial\n7) Determine the primitive roots for an integer\n8) Compute polynomial multiplication\n");
         string response = Console.ReadLine();
         
         string[] nums;
@@ -50,6 +50,11 @@ class Program {
                 bool print = Console.ReadLine() == "y";
                 PrimitiveRoots(num, print).ForEach(x=>Console.Write($"{x}, "));
                 Console.WriteLine();
+                break;
+            case "8":
+                Console.Write("Enter the polynomials in hex (ex. 72 * 2F ): ");
+                nums = Console.ReadLine().Split(" * ");
+                Console.WriteLine(PolynomialMultiplication(nums[0], nums[1]));
                 break;
             default:
                 Console.WriteLine("That is not an option");
@@ -249,5 +254,24 @@ class Program {
         }
 
         return generators;
+    }
+
+    public static string PolynomialMultiplication(string hex1, string hex2) {
+        int num1 = Convert.ToInt32(hex1, 16);
+        int num2 = Convert.ToInt32(hex2, 16);
+
+        int finalNum = 0;
+
+        for(int i = 128; i >= 1; i /= 2) {
+            finalNum = finalNum ^ ((i & num1) * num2);
+        }
+
+        while(finalNum > 127) {
+            int bitStringLength = Convert.ToString(finalNum, 2).Length-1;
+            int AESIrreducible = Convert.ToInt32("100011011", 2) << bitStringLength-8;
+            finalNum = finalNum ^ AESIrreducible;
+        }
+
+        return finalNum.ToString("X");
     }
 }
