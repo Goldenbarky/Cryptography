@@ -61,6 +61,11 @@ class Program {
                     Console.WriteLine(PolynomialMultiplication(nums[0], nums[1]));
                 }
                 break;
+            case "9":
+                nums = Console.ReadLine().Split(" ");
+                int value = Convert.ToInt32(nums[0], 16) ^ Convert.ToInt32(nums[1], 16) ^ Convert.ToInt32(nums[2], 16) ^ Convert.ToInt32(nums[3], 16);
+                Console.WriteLine(value.ToString("X"));
+                break;
             default:
                 Console.WriteLine("That is not an option");
                 break;
