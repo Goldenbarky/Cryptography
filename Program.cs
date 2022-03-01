@@ -62,9 +62,7 @@ class Program {
                 }
                 break;
             case "9":
-                nums = Console.ReadLine().Split(" ");
-                int value = Convert.ToInt32(nums[0], 16) ^ Convert.ToInt32(nums[1], 16) ^ Convert.ToInt32(nums[2], 16) ^ Convert.ToInt32(nums[3], 16);
-                Console.WriteLine(value.ToString("X"));
+                Console.WriteLine(SquareMultiply(1234567, 23456789, 3333337));
                 break;
             default:
                 Console.WriteLine("That is not an option");
@@ -286,5 +284,16 @@ class Program {
 
         //Convert to hex
         return finalNum.ToString("X");
+    }
+
+    public static int SquareMultiply(int value, int exponent, int modulo) {
+        string bitString = Convert.ToString(exponent, 2);
+        BigInteger num = value;
+        for(int i = bitString.Length-1; i >= 0; i--) {
+            num = BigInteger.ModPow(num, 2, modulo);
+            if(bitString[i] == '1') num = BigInteger.ModPow(BigInteger.Multiply(num, value), 1, modulo);
+        }
+
+        return (int) num; 
     }
 }
