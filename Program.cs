@@ -272,16 +272,19 @@ class Program {
 
         int finalNum = 0;
 
+        //Compute multipliation mod 2
         for(int i = 128; i >= 1; i /= 2) {
             finalNum = finalNum ^ ((i & num1) * num2);
         }
 
+        //Mod by AES irriducible
         while(finalNum > 256) {
             int bitStringLength = Convert.ToString(finalNum, 2).Length-1;
             int AESIrreducible = Convert.ToInt32("100011011", 2) << bitStringLength-8;
             finalNum = finalNum ^ AESIrreducible;
         }
 
+        //Convert to hex
         return finalNum.ToString("X");
     }
 }
