@@ -62,7 +62,9 @@ class Program {
                 }
                 break;
             case "9":
-                Console.WriteLine(SquareMultiply(1234567, 23456789, 3333337));
+                Console.Write("Enter the values (ex. value, exponent, modulus): ");
+                nums = Console.ReadLine().Split(", ");
+                Console.WriteLine(SquareMultiply(int.Parse(nums[0]), int.Parse(nums[1]), int.Parse(nums[2])));
                 break;
             default:
                 Console.WriteLine("That is not an option");
@@ -288,12 +290,12 @@ class Program {
 
     public static int SquareMultiply(int value, int exponent, int modulo) {
         string bitString = Convert.ToString(exponent, 2);
-        BigInteger num = value;
-        for(int i = bitString.Length-1; i >= 0; i--) {
+        BigInteger num = 1;
+        for(int i = 0; i < bitString.Length; i++) {
             num = BigInteger.ModPow(num, 2, modulo);
-            if(bitString[i] == '1') num = BigInteger.ModPow(BigInteger.Multiply(num, value), 1, modulo);
+            if(bitString[i] == '1') num =  BigInteger.ModPow(BigInteger.Multiply(num, value), 1, modulo);
         }
 
-        return (int) num; 
+        return (int) num;
     }
 }
