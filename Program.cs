@@ -311,8 +311,9 @@ class Program {
     //Returns an array of the prime numbers stored in primes.txt
     public static int[] GetPrimes() {
         List<int> primes = new List<int>();
-        foreach(string prime in File.ReadLines("primes.csv"))
-            primes.Add(int.Parse(prime));
+        foreach(string line in File.ReadLines("primes.txt"))
+            foreach(string prime in line.Split(" "))
+                primes.Add(int.Parse(prime));
 
         return primes.ToArray();
     }
