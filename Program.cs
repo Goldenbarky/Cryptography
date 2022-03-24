@@ -66,6 +66,15 @@ class Program {
                 nums = Console.ReadLine().Split(", ");
                 Console.WriteLine(SquareMultiply(int.Parse(nums[0]), int.Parse(nums[1]), int.Parse(nums[2])));
                 break;
+            case "10":
+                Console.Write("Enter the numer: ");
+                Console.WriteLine(IsPrime(Int64.Parse(Console.ReadLine()), GetPrimes()));
+                break;
+            case "11":
+                Console.Write("Enter the values (MaxValue, NumToFind): ");
+                nums = Console.ReadLine().Split(", ");
+                FindCarmichaelNumbers(int.Parse(nums[1]), int.Parse(nums[0]));
+                break;
             default:
                 Console.WriteLine("That is not an option");
                 break;
@@ -297,5 +306,49 @@ class Program {
         }
 
         return (int) num;
+    }
+
+    //Returns an array of the prime numbers stored in primes.txt
+    public static int[] GetPrimes() {
+        List<int> primes = new List<int>();
+        foreach(string prime in File.ReadLines("primes.csv"))
+            primes.Add(int.Parse(prime));
+
+        return primes.ToArray();
+    }
+
+    public static bool IsPrime(Int64 num, int[] primesSample) {
+        for(int i = 0; i < primesSample.Length; i++) {
+            if(primesSample[i] >= num) return true;
+            if(num % primesSample[i] == 0) return false;
+        }
+
+        Console.WriteLine($"Needs larger prime sample size for {num}");
+        return false;
+    }
+
+    public static bool FermatPrimalityTest(int num, int s, bool includeCarmichael) {
+        Random random = new Random();
+        for(int i = 0; i < s; i++) {
+            int a = random.Next(2, num - 2);
+            if(SquareMultiply(a, num - 1, num) != 1 && (!includeCarmichael || GCD(a, num) == 1)) return false;
+        }
+
+        return true;    
+    }
+
+    //Prints out specified number of carmichael numbers below the given value via fermats primality test
+    public static void FindCarmichaelNumbers(int num, int maximum) {
+        int[] primes = GetPrimes();
+
+        int currNum = maximum;
+        while(num > 0 && currNum > 2) {
+            if(FermatPrimalityTest(currNum, 20, true) && !IsPrime(currNum, primes)) {
+                Console.WriteLine($"{currNum} is a Carmicheal number");
+                num--;
+            }
+
+            currNum--;
+        }
     }
 }
