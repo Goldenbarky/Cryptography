@@ -1,8 +1,10 @@
 ﻿using System.Numerics;
+using System;
+using System.Diagnostics;
 
 class Program {
     public static void Main(string[] args) {
-        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n5) Compute the Extended Euclidian Algorithm\n6) Determine the classification of a LFSR polynomial\n7) Determine the primitive roots for an integer\n8) Compute polynomial multiplication\n");
+        Console.Write("What would you like to do?\n1) Decrypt a message\n2) Calculate a GCD\n3) Calculate a modulo\n4) Compute a LFSR cycle\n5) Compute the Extended Euclidian Algorithm\n6) Determine the classification of a LFSR polynomial\n7) Determine the primitive roots for an integer\n8) Compute polynomial multiplication\n9)Square Multiply\n10) Check prime\n11) Find Carmichael Numbers\n12) Fermat Primality test\n");
         string response = Console.ReadLine();
         
         string[] nums;
@@ -73,7 +75,15 @@ class Program {
             case "11":
                 Console.Write("Enter the values (MaxValue, NumToFind): ");
                 nums = Console.ReadLine().Split(", ");
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
                 FindCarmichaelNumbers(int.Parse(nums[1]), int.Parse(nums[0]));
+                stopwatch.Stop();
+                Console.WriteLine($"Calculations took {stopwatch.ElapsedMilliseconds} ms");
+                break;
+            case "12":
+                Console.Write("Enter the numer: ");
+                Console.WriteLine(FermatPrimalityTest(int.Parse(Console.ReadLine()), 20, false));
                 break;
             default:
                 Console.WriteLine("That is not an option");
@@ -320,7 +330,7 @@ class Program {
 
     public static bool IsPrime(Int64 num, int[] primesSample) {
         for(int i = 0; i < primesSample.Length; i++) {
-            if(primesSample[i] >= num) return true;
+            if(primesSample[primesSample.Length - 1 - i] == num || primesSample[i] == num) return true;
             if(num % primesSample[i] == 0) return false;
         }
 
@@ -331,8 +341,11 @@ class Program {
     public static bool FermatPrimalityTest(int num, int s, bool includeCarmichael) {
         Random random = new Random();
         for(int i = 0; i < s; i++) {
-            int a = random.Next(2, num - 2);
-            if(SquareMultiply(a, num - 1, num) != 1 && (!includeCarmichael || GCD(a, num) == 1)) return false;
+            int a;
+            do 
+                a = random.Next(2, num - 2);
+            while (includeCarmichael && GCD(a, num) != 1);
+            if(SquareMultiply(a, num - 1, num) != 1) return false;
         }
 
         return true;    
