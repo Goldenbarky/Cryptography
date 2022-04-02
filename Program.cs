@@ -357,7 +357,7 @@ class Program {
 
     public static bool IsPrime(Int64 num, int[] primesSample) {
         for(int i = 0; i < primesSample.Length; i++) {
-            if(primesSample[primesSample.Length - 1 - i] == num || primesSample[i] == num) return true;
+            if(primesSample[primesSample.Length - 1 - i] == num || primesSample[i] == num || primesSample[i] >= Math.Sqrt(num)) return true;
             if(num % primesSample[i] == 0) return false;
         }
 
