@@ -50,8 +50,10 @@ class Program {
                 int num = int.Parse(Console.ReadLine());
                 Console.Write("Print orders? (y/n): ");
                 bool print = Console.ReadLine() == "y";
-                PrimitiveRoots(num, print).ForEach(x=>Console.Write($"{x}, "));
+                List<int> roots = PrimitiveRoots(num, print);
+                roots.ForEach(x=>Console.Write($"{x}, "));
                 Console.WriteLine();
+                Console.WriteLine($"There are {roots.Count} roots for {num}");
                 break;
             case "8":
                 string input = "";
@@ -64,9 +66,14 @@ class Program {
                 }
                 break;
             case "9":
-                Console.Write("Enter the values (ex. value, exponent, modulus): ");
-                nums = Console.ReadLine().Split(", ");
-                Console.WriteLine(SquareMultiply(int.Parse(nums[0]), int.Parse(nums[1]), int.Parse(nums[2])));
+                while (true) {
+                    Console.Write("Enter the values (ex. value, exponent, modulus): ");
+                    input = Console.ReadLine();
+                    if(input == "q") break;
+                    nums = input.Split(", ");
+                    Console.WriteLine(SquareMultiply(int.Parse(nums[0]), int.Parse(nums[1]), int.Parse(nums[2])));
+                }
+                
                 break;
             case "10":
                 Console.Write("Enter the numer: ");
@@ -84,6 +91,18 @@ class Program {
             case "12":
                 Console.Write("Enter the numer: ");
                 Console.WriteLine(FermatPrimalityTest(int.Parse(Console.ReadLine()), 20, false));
+                break;
+            case "13":
+                Console.Write("Enter the values (base, modulus, target): ");
+                nums = Console.ReadLine().Split(", ");
+                Console.WriteLine(DiscreteLog(int.Parse(nums[0]), int.Parse(nums[1]), int.Parse(nums[2])));
+                break;
+            case "14":
+                HashSet<int> maskingKeys = new HashSet<int>();
+                for(int i = 2; i < 29; i++) {
+                    maskingKeys.Add(SquareMultiply(30, i, 31));
+                }
+                foreach(int key in maskingKeys) Console.WriteLine(key);
                 break;
             default:
                 Console.WriteLine("That is not an option");
@@ -111,6 +130,14 @@ class Program {
             });
 
             Console.WriteLine($"Attempt {i}: {plaintext}");
+        }
+    }
+
+    public static void RSACodeBook(int n, int e) {
+        char letter = 'A';
+        for(int i = 65; i < 91; i++) {
+            Console.WriteLine("{0} = {1}", letter, SquareMultiply(i, e, n));
+            letter++;
         }
     }
 
@@ -364,5 +391,17 @@ class Program {
 
             currNum--;
         }
+    }
+
+    public static int DiscreteLog(int num, int modulus, int target) {
+        for(int exponent = 1; exponent < modulus; exponent++) {
+            BigInteger value = BigInteger.ModPow(num, exponent, modulus);
+            if(value == target)
+                return exponent;
+            else if(value == num % modulus && exponent != 1)
+                return -1;
+        }
+
+        return -1;
     }
 }
